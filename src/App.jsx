@@ -14,10 +14,36 @@ export const ACTION = {
 function reducer(state, { type, payload }) {
   switch (type) {
     case ACTION.ADD_DIGIT:
+      // limits the amount of 0 that can be used
+      if (payload.digit === "0" && state.currentOperand === "0") {
+        return state;
+      }
+      // limits the amount of periods that can be used
+      if (payload.digit === "." && state.currentOperand.includes(".")) {
+        return state;
+      }
       return {
         ...state,
         currentOperand: `${state.currentOperand || ""}${payload.digit}`,
       };
+    case ACTION.CHOOSE_OPERATIOIN:
+      // if theres nothing typed out, then it wont print anything
+      if (state.currentOperand == null && state.currentOperand == null) {
+        return state;
+      }
+      // if current operand has a number, but not a previous operand
+      if (state.previousOperand == null) {
+        return {
+          ...state,
+          operation: payload.operation,
+          previousOperand: state.currentOperand,
+          currentOperand: null,
+        };
+      }
+
+    // returns an empty state, to have everything cleared
+    case ACTION.CLEAR_DIGIT:
+      return {};
   }
 }
 
@@ -35,9 +61,14 @@ function App() {
         </div>
         <div className="current-operand">{currentOperand}</div>
       </div>
-      <button className="spand-two">AC</button>
+      <button
+        className="spand-two"
+        onClick={() => dispatch({ type: ACTION.CLEAR_DIGIT })}
+      >
+        AC
+      </button>
       <button>DEL</button>
-      <OperationButton digit={"÷"} dispatch={dispatch} />
+      <OperationButton operation={"÷"} dispatch={dispatch} />
       <DigitButton digit={"1"} dispatch={dispatch} />
       <DigitButton digit={"2"} dispatch={dispatch} />
       <DigitButton digit={"3"} dispatch={dispatch} />
